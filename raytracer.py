@@ -6,8 +6,8 @@ from materials import *
 from lights import *
 
 
-width = 768
-height = 640
+width = 1440
+height = 720
 
 pg.init()
 
@@ -19,21 +19,24 @@ raytracer = Raytracer(screen=screen)
 raytracer.envMap = pg.image.load("environmentMap.jpg")
 fireTex = pg.image.load("fire.bmp")
 
-raytracer.rtClearColor(0.25, 0.25, 0.25)
-
-grass = Material(diffuse=(0.4, 1, 0.4), specular=32, ks=0.1)
+#Opacos
+orange = Material(diffuse=(0.57, 0.35, 0.08), specular=8, ks=0.01)
 fire = Material(texture=fireTex)
+
+#Reflectivas
 glass = Material(diffuse=(0.9, 0.9, 0.9), specular=64, ks=0.2, ior=1.5, matType=REFLECTIVE)
 silver = Material(diffuse=(0.5, 0.5, 0.5), specular=128, ks=0.15, ior=1, matType=REFLECTIVE)
+
+#Transparente
 diamon = Material(diffuse=(0.9, 0.9, 0.9), specular=64, ks=0.2, ior=2.417, matType=TRANSPARENT)
 water = Material(diffuse=(0.4, 0.4, 1.0), specular=128, ks=0.2, ior=1.33, matType=TRANSPARENT)
 
-raytracer.scene.append(Sphere(position=(-2, 1, -5), radius=1, material=grass))
-raytracer.scene.append(Sphere(position=(-2, -1, -5), radius=1, material=fire))
-raytracer.scene.append(Sphere(position=(0, 1, -5), radius=1, material=glass))
-raytracer.scene.append(Sphere(position=(0, -1, -5), radius=1, material=silver))
-raytracer.scene.append(Sphere(position=(2, 1, -5), radius=1, material=diamon))
-raytracer.scene.append(Sphere(position=(2,-1, -5), radius=1, material=water))
+raytracer.scene.append(Sphere(position=(-2.5, 1.5, -5), radius=1, material=orange))
+raytracer.scene.append(Sphere(position=(-2.5, -1.5, -5), radius=1, material=fire))
+raytracer.scene.append(Sphere(position=(0, 1.5, -5), radius=1, material=glass))
+raytracer.scene.append(Sphere(position=(0, -1.5, -5), radius=1, material=silver))
+raytracer.scene.append(Sphere(position=(2.5, 1.5, -5), radius=1, material=diamon))
+raytracer.scene.append(Sphere(position=(2.5,-1.5, -5), radius=1, material=water))
 
 
 #Lights
