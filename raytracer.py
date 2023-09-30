@@ -28,12 +28,12 @@ silver = Material(diffuse=(0.5, 0.5, 0.5), specular=128, ks=0.15, ior=1, matType
 diamon = Material(diffuse=(0.9, 0.9, 0.9), specular=64, ks=0.2, ior=2.417, matType=TRANSPARENT)
 water = Material(diffuse=(0.4, 0.4, 1.0), specular=128, ks=0.2, ior=1.33, matType=TRANSPARENT)
 
-raytracer.scene.append(Sphere(position=(-2, 2, -5), radius=1, material=grass))
-raytracer.scene.append(Sphere(position=(-2, -2, -5), radius=1, material=fire))
-raytracer.scene.append(Sphere(position=(0, 2, -5), radius=1, material=glass))
-raytracer.scene.append(Sphere(position=(0, -2, -5), radius=1, material=silver))
-raytracer.scene.append(Sphere(position=(2, 2, -5), radius=1, material=diamon))
-raytracer.scene.append(Sphere(position=(2,-2, -5), radius=1, material=water))
+raytracer.scene.append(Sphere(position=(-2, 1, -5), radius=1, material=grass))
+raytracer.scene.append(Sphere(position=(-2, -1, -5), radius=1, material=fire))
+raytracer.scene.append(Sphere(position=(0, 1, -5), radius=1, material=glass))
+raytracer.scene.append(Sphere(position=(0, -1, -5), radius=1, material=silver))
+raytracer.scene.append(Sphere(position=(2, 1, -5), radius=1, material=diamon))
+raytracer.scene.append(Sphere(position=(2,-1, -5), radius=1, material=water))
 
 
 #Lights
