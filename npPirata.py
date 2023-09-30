@@ -1,4 +1,4 @@
-from math import isclose, sqrt
+from math import isclose, sqrt, acos, asin
 
 def multMM(matrices):
     resultado = matrices[0]
@@ -87,6 +87,20 @@ def subtractVectors(v1, v2):
     resultado = [v1[i] - v2[i] for i in range(len(v1))]
     return resultado
 
+def addVectors(v1, v2):
+    if len(v1) != len(v2):
+        raise ValueError("Los vectores deben tener la misma longitud para realizar la resta.")
+
+    resultado = [v1[i] + v2[i] for i in range(len(v1))]
+    return resultado
+
+def multVectors(v1, v2):
+    if len(v1) != len(v2):
+        raise ValueError("Los vectores deben tener la misma longitud para realizar la resta.")
+
+    resultado = [v1[i] * v2[i] for i in range(len(v1))]
+    return resultado
+
 def normVector(vector):
     magnitud = sqrt(sum(x ** 2 for x in vector))
     
@@ -121,6 +135,14 @@ def multVectorScalar(vector, scalar):
     result = [scalar * value for value in vector]
     return result
 
+def addVectorScalar(vector, scalar):
+    result = [scalar + value for value in vector]
+    return result
+
+def subtractVectorScalar(vector, scalar):
+    result = [scalar - value for value in vector]
+    return result
+
 def reflectVector(vector, normal):
     dot_product = dot(vector, normal)
     reflection = [2 * dot_product * normal[i] - vector[i] for i in range(len(vector))]
@@ -128,3 +150,64 @@ def reflectVector(vector, normal):
 
 def vectorMagnitude(vector):
     return sum(i ** 2 for i in vector) ** 0.5
+
+def refractVector(normal, incident, n1, n2):
+    c1 = dot(normal, incident)
+
+    if (c1 < 0): 
+        c1 = -c1
+    else:
+        normal = vectorNegative(normal)
+        n1, n2 = n2, n1
+
+    n = n1 / n2
+
+    # t1 = n * (incident + c1 * normal)
+    # t2 = t1 - normal
+    # x = (1 - n ** 2 * (1 - c1 ** 2)) ** 0.5
+    # t =  t2 * x
+
+    t1 = multVectorScalar(addVectors(incident, multVectorScalar(normal, c1)), n)
+    t2 = subtractVectors(t1, normal)
+    x = (1 - n ** 2 * (1 - c1 ** 2)) ** 0.5
+    t = multVectorScalar(t2, x)
+    
+    return normVector(t)
+
+def totalInternalReflection(normal, incident, n1, n2):
+    c1 = dot(normal, incident)
+
+    if (c1 < 0): 
+        c1 = -c1
+    else:
+        normal = vectorNegative(normal)
+        n1, n2 = n2, n1
+
+    if (n1 < n2):
+        return False
+
+    tetha1 = acos(c1)
+    tethaC = asin(n2/n1)
+
+    return tetha1 >= tethaC
+
+def fresnel(normal, incident, n1, n2):
+    c1 = dot(normal, incident)
+
+    if (c1 < 0): 
+        c1 = -c1
+    else:
+        normal = vectorNegative(normal)
+        n1, n2 = n2, n1
+
+    s2 = (n1 * (1 - c1 ** 2) ** 0.5) / n2
+    c2 = (1 - s2 ** 2) ** 0.5
+
+    f1 = (((n2 * c1) - (n1 * c2)) / ((n2 * c1) + (n1 * c2))) ** 2
+    f2 = (((n1 * c2) - (n2 * c1)) / ((n1 * c2) + (n2 * c1))) ** 2
+
+    kr = (f1 + f2) / 2
+    kt = 1 - kr
+
+    return kr, kt
+

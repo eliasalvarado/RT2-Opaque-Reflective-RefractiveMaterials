@@ -1,6 +1,6 @@
 from math import tan, pi, atan2, acos
 from materials import OPAQUE, REFLECTIVE, TRANSPARENT
-from npPirata import normVector, vectorNegative, subtractVectors, reflectVector
+from npPirata import normVector, dot, vectorNegative, subtractVectors, reflectVector, addVectors, addVectorScalar, subtractVectorScalar, multVectorScalar, refractVector, totalInternalReflection, fresnel
 
 maxRecursionDepth = 3
 
@@ -91,6 +91,7 @@ class Raytracer(object):
         diffuseColor = [0, 0, 0]
         specularColor = [0, 0, 0]
         reflectColor = [0, 0, 0]
+        refractColor = [0, 0, 0]
 
         if material.matType == OPAQUE:
             for light in self.lights:
@@ -143,8 +144,43 @@ class Raytracer(object):
                         specularColor[1] += specularLightColor[1]
                         specularColor[2] += specularLightColor[2]
 
+        elif material.matType == TRANSPARENT:
+            outside = dot(rayDirection, intercept.normal) < 0
+            bias = multVectorScalar(intercept.normal, 0.001)
+
+            reflect = reflectVector(vectorNegative(rayDirection), intercept.normal)
+            reflectOrigin = addVectors(reflect, bias) if outside else subtractVectors(reflect, bias)
+            reflectIntercept = self.rtCastRay(reflectOrigin, reflect, None, recursion + 1)
+            reflectColor = self.rtRayColor(reflectIntercept, reflect, recursion + 1)
+
+            for light in self.lights:
+                if light.lightType != "Ambient":
+                    lightDir = None
+                    if light.lightType == "Directional":
+                        lightDir = vectorNegative(light.direction)
+                    elif light.lightType == "Point":
+                        lightDir = subtractVectors(light.point, intercept.point)
+                        lightDir = normVector(lightDir)
+
+                    shadowIntersect = self.rtCastRay(intercept.point, lightDir, intercept.obj)
+
+                    if shadowIntersect == None:
+                        specularLightColor = light.getSpecularColor(intercept, self.camPosition)
+                        specularColor[0] += specularLightColor[0]
+                        specularColor[1] += specularLightColor[1]
+                        specularColor[2] += specularLightColor[2]
+
+            if not totalInternalReflection(intercept.normal, rayDirection, 1.0, material.ior):
+                refract = refractVector(intercept.normal, rayDirection, 1, material.ior)
+                refractOrigin = subtractVectors(intercept.point, bias) if outside else addVectors(intercept.point, bias)
+                refractIntercept = self.rtCastRay(refractOrigin, refract, None, recursion + 1)
+                refractColor = self.rtRayColor(refractIntercept, refract, recursion + 1)
+
+                kr, kt = fresnel(intercept.normal, rayDirection, 1, material.ior)
+                reflectColor = multVectorScalar(reflectColor, kr)
+                refractColor = multVectorScalar(refractColor, kt)
         
-        lightColor = [(ambientColor[i] + diffuseColor[i] + specularColor[i] + reflectColor[i]) for i in range(3)]
+        lightColor = [(ambientColor[i] + diffuseColor[i] + specularColor[i] + reflectColor[i] + refractColor[i]) for i in range(3)]
         finalColor = [min(1,(surfaceColor[i] * lightColor[i])) for i in range(3)]
 
         return finalColor

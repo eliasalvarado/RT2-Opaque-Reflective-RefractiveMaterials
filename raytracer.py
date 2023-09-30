@@ -6,8 +6,8 @@ from materials import *
 from lights import *
 
 
-width = 512
-height = 512
+width = 768
+height = 640
 
 pg.init()
 
@@ -16,30 +16,29 @@ screen.set_alpha(None)
 
 raytracer = Raytracer(screen=screen)
 
-raytracer.envMap = pg.image.load("envMap.jpg")
-earthTex = pg.image.load("earth.bmp")
+raytracer.envMap = pg.image.load("environmentMap.jpg")
+fireTex = pg.image.load("fire.bmp")
 
 raytracer.rtClearColor(0.25, 0.25, 0.25)
 
 grass = Material(diffuse=(0.4, 1, 0.4), specular=32, ks=0.1)
-water = Material(diffuse=(0.4, 0, 1), specular=256, ks=0.2)
-mirror = Material(diffuse=(0.9, 0.9, 0.9), specular=64, ks=0.2, matType=REFLECTIVE)
-blueMirror = Material(diffuse=(0.4, 0.4, 0.9), specular=32, ks=0.15, matType=REFLECTIVE)
-earth = Material(texture=earthTex)
+fire = Material(texture=fireTex)
+glass = Material(diffuse=(0.9, 0.9, 0.9), specular=64, ks=0.2, ior=1.5, matType=REFLECTIVE)
+silver = Material(diffuse=(0.5, 0.5, 0.5), specular=128, ks=0.15, ior=1, matType=REFLECTIVE)
+diamon = Material(diffuse=(0.9, 0.9, 0.9), specular=64, ks=0.2, ior=2.417, matType=TRANSPARENT)
+water = Material(diffuse=(0.4, 0.4, 1.0), specular=128, ks=0.2, ior=1.33, matType=TRANSPARENT)
 
-""" raytracer.scene.append(Sphere(position=(1, 1, -5), radius=0.5, material=grass))
-raytracer.scene.append(Sphere(position=(0, 0, -7), radius=2, material=mirror))
-raytracer.scene.append(Sphere(position=(0.5, -1, -5), radius=0.3, material=water)) """
-
-raytracer.scene.append(Sphere(position=(-2, 0, -7), radius=1.5, material=mirror))
-raytracer.scene.append(Sphere(position=(2, 0, -7), radius=2, material=earth))
-raytracer.scene.append(Sphere(position=(0, -1, -5), radius=0.5, material=blueMirror))
+raytracer.scene.append(Sphere(position=(-2, 2, -5), radius=1, material=grass))
+raytracer.scene.append(Sphere(position=(-2, -2, -5), radius=1, material=fire))
+raytracer.scene.append(Sphere(position=(0, 2, -5), radius=1, material=glass))
+raytracer.scene.append(Sphere(position=(0, -2, -5), radius=1, material=silver))
+raytracer.scene.append(Sphere(position=(2, 2, -5), radius=1, material=diamon))
+raytracer.scene.append(Sphere(position=(2,-2, -5), radius=1, material=water))
 
 
 #Lights
 raytracer.lights.append(AmbientLight(0.1))
-raytracer.lights.append(DirectionalLight(direction=(-1, -1, -1), intensity=0.7))
-raytracer.lights.append(PointLight(point=(1.5, 0, -5), intensity=1, color=(1, 0, 1)))
+raytracer.lights.append(DirectionalLight(direction=(-1, -1, -1), intensity=0.9))
 
 
 isRunning = True
